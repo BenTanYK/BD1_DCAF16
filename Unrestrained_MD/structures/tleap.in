@@ -12,7 +12,7 @@ bond mol.173.ZN mol.59.SG #Bond zinc ion with SG atom of residue CYM
 bond mol.173.ZN mol.133.SG #Bond zinc ion with SG atom of residue CYM
 bond mol.173.ZN mol.135.SG #Bond zinc ion with SG atom of residue CYM
 
-solvateOct mol TIP3PBOX 15.0 # Solvate system
+solvateOct mol TIP3PBOX 20.0 # Solvate system
 
 addions mol CL 0
 
