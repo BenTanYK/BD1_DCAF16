@@ -18,8 +18,8 @@ if not os.path.exists(savedir): # Make save directory if it doesn't yet exist
 dt = 4*unit.femtoseconds 
 
 # Load param and coord files
-prmtop = app.AmberPrmtopFile(f'structures/complex.prmtop')
-inpcrd = app.AmberInpcrdFile(f'structures/complex.inpcrd')
+prmtop = app.AmberPrmtopFile(f'structures/complex_DDB1.prmtop')
+inpcrd = app.AmberInpcrdFile(f'structures/complex_DDB1.inpcrd')
 
 system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometer, hydrogenMass=1.5*unit.amu, constraints=app.HBonds)  
 integrator = mm.LangevinMiddleIntegrator(0.0000*unit.kelvin, 1.0000/unit.picosecond, dt)
@@ -43,23 +43,23 @@ for i in range(50):
 simulation.step(1000)
 simulation.context.setVelocitiesToTemperature(300*unit.kelvin)
 
-"""RMSD restraints in DDB1-binding region"""
+# """RMSD restraints in DDB1-binding region"""
 
-reference_positions = inpcrd.positions
+# reference_positions = inpcrd.positions
 
-DCAF16_interface_residx = np.append(np.arange(0,55), np.arange(123, 172))
-DCAF16_DDB1_binding_residx = np.arange(71,114)
+# DCAF16_interface_residx = np.append(np.arange(0,55), np.arange(123, 172))
+# DCAF16_DDB1_binding_residx = np.arange(70,116)
 
-DDB1_binding_atoms = [
-    atom.index for atom in simulation.topology.atoms()
-    if atom.residue.index in DCAF16_DDB1_binding_residx and atom.name in ('CA', 'C', 'N')
-]
+# DDB1_binding_atoms = [
+#     atom.index for atom in simulation.topology.atoms()
+#     if atom.residue.index in DCAF16_DDB1_binding_residx and atom.name in ('CA', 'C', 'N')
+# ]
 
-DDB1_rmsd_force = mm.CustomCVForce('0.5*k_DDB1*rmsd^2')
-DDB1_rmsd_force.addGlobalParameter('k_DDB1', 100 * unit.kilocalories_per_mole / unit.angstrom**2)
-DDB1_rmsd_force.addCollectiveVariable('rmsd', mm.RMSDForce(reference_positions, DDB1_binding_atoms))
-system.addForce(DDB1_rmsd_force)
-simulation.context.reinitialize(preserveState=True)
+# DDB1_rmsd_force = mm.CustomCVForce('0.5*k_DDB1*rmsd^2')
+# DDB1_rmsd_force.addGlobalParameter('k_DDB1', 30 * unit.kilocalories_per_mole / unit.angstrom**2)
+# DDB1_rmsd_force.addCollectiveVariable('rmsd', mm.RMSDForce(reference_positions, DDB1_binding_atoms))
+# system.addForce(DDB1_rmsd_force)
+# simulation.context.reinitialize(preserveState=True)
 
 """100 ns simulation"""
 

@@ -62,20 +62,16 @@ def obtain_CA_idx(u, res_idx):
     else:  
         return selected_CA.indices[0]
     
-def obtain_angle(run_number, pos1, pos2, pos3):
-
-    u = mda.Universe('structures/complex.prmtop', f'results/run{run_number}/traj.dcd')
+def obtain_angle(pos1, pos2, pos3):
 
     return mda.lib.distances.calc_angles(pos1, pos2, pos3)
 
-def obtain_dihedral(run_number, pos1, pos2, pos3, pos4):
-    
-    u = mda.Universe('structures/complex.prmtop', f'results/run{run_number}/traj.dcd')
+def obtain_dihedral(pos1, pos2, pos3, pos4):
 
     return mda.lib.distances.calc_dihedrals(pos1, pos2, pos3, pos4)
 
 def obtain_RMSD(run_number, res_range=[0,392]):
-    u = mda.Universe('structures/complex.prmtop', f'results/run{run_number}/traj.dcd')
+    u = mda.Universe('structures/complex_DDB1.prmtop', f'results/run{run_number}/traj.dcd')
     protein = u.select_atoms("protein")
 
     ref = protein
@@ -105,7 +101,7 @@ def save_RMSD(run_number, res_range=[0,392]):
     return df
 
 def obtain_RMSF(run_number, res_range=[0,392]):
-    u = mda.Universe('structures/complex.prmtop', f'results/run{run_number}/traj.dcd')
+    u = mda.Universe('structures/complex_DDB1.prmtop', f'results/run{run_number}/traj.dcd')
     
     average = align.AverageStructure(u, u, select='protein and name CA',
                                  ref_frame=0).run()
@@ -152,13 +148,13 @@ def run_analysis(systems, k_values):
 
 def obtain_Boresch_dof(run_number, dof):
 
-    rec_group = [4, 18, 37, 56, 81, 96, 107, 126, 136, 160, 177, 193, 215, 226, 245, 264, 286, 307, 318, 332, 346, 400, 406, 425, 447, 453, 521, 610, 629, 649, 655, 666, 688, 694, 710, 727, 789, 941, 1872, 1899, 1905, 1920, 1941, 1960, 1999, 2026, 2057, 2068, 2084, 2095, 2102, 2112, 2123, 2133, 2140, 2164, 2183, 2197, 2219, 2463]
-    lig_group = [3032, 3054, 3071, 3088, 3333, 3360, 3366, 3378, 3442, 4051, 4072, 4091, 4112, 4126, 4156, 4162, 4169, 4181, 4193, 4212, 4228, 4247, 4264, 4274, 4289, 4824, 4834, 4856, 4878, 4895, 4905, 4915, 4936, 4946, 4978, 5025, 5055, 5061, 5077, 5089, 5105, 5120, 5130, 5149, 5156, 5175, 5192, 5204, 5890, 5911, 5933, 5953, 5965, 5982, 5997, 6013, 6039]
+    rec_group =  [4, 18, 37, 96, 136, 160, 177, 193, 215, 226, 245, 264, 286, 346, 370, 400, 406, 425, 447, 453, 467, 478, 502, 521, 542, 559, 569, 610, 629, 649, 655, 666, 688, 694, 710, 727, 765, 789, 873, 892, 1844, 1866, 1872, 1899, 1905, 1920, 1941, 1960, 1982]
+    lig_group = [2975, 2989, 3032, 3054, 3071, 3088, 3108, 3366, 3378, 3442, 4051, 4072, 4091, 4112, 4126, 4156, 4162, 4169, 4181, 4193, 4212, 4228, 4247, 4264, 4274, 4289, 4299, 4318, 4333, 4355, 4374, 4394]
 
     res_b = 8
     res_c = 142
-    res_B = 332
-    res_C = 244
+    res_B = 193
+    res_C = 262 
 
     group_a = u.atoms[rec_group]
     group_b = u.atoms[[obtain_CA_idx(u, res_b)]]
@@ -185,28 +181,60 @@ def obtain_Boresch_dof(run_number, dof):
     indices = dof_indices[dof]
 
     if len(indices) == 3:
-        return obtain_angle(run_number, indices[0], indices[1], indices[2])
+        return obtain_angle(indices[0], indices[1], indices[2])
 
     else:
-        return obtain_dihedral(run_number, indices[0], indices[1], indices[2], indices[3])
+        return obtain_dihedral(indices[0], indices[1], indices[2], indices[3])
 
-# for n_run in [0,1,2,3,4]:
+# for n_run in [1,2,3]:
+#     # complex
 #     print(f"\nGenerating RMSD for run {n_run}")
 #     save_RMSD(n_run)
+
+#     # CRBN
+#     time, RMSD = obtain_RMSD(n_run, [0,172])
+#     df = pd.DataFrame()
+#     df['Time (ns)'] = time
+#     df['RMSD (Angstrom)'] = RMSD
+#     filename = 'RMSD_DCAF16.csv'
+#     df.to_csv(f"results/run{n_run}/{filename}")
+
+#     # CK1a
+#     time, RMSD = obtain_RMSD(n_run, [174, 280])
+#     df = pd.DataFrame()
+#     df['Time (ns)'] = time
+#     df['RMSD (Angstrom)'] = RMSD
+#     filename = 'RMSD_BD1.csv'
+#     df.to_csv(f"results/run{n_run}/{filename}")
+
+
+#     # complex
 #     print(f"\nGenerating RMSF for  run {n_run}")
-#     save_RMSF( n_run)   
+#     save_RMSF(n_run)   
 
-dof = str(sys.argv[1])
+#     # CRBN
+#     residx, RMSF = obtain_RMSF(n_run, [0,172])
+#     df = pd.DataFrame()
+#     df['Residue index'] = residx
+#     df['RMSF (Angstrom)'] = RMSF
+#     df.to_csv(f"results/run{n_run}/RMSF_DCAF16.csv")
 
-for run_number in [4]:
+#     # CK1a
+#     residx, RMSF = obtain_RMSF(n_run, [174,280])
+#     df = pd.DataFrame()
+#     df['Residue index'] = residx
+#     df['RMSF (Angstrom)'] = RMSF
+#     df.to_csv(f"results/run{n_run}/RMSF_BD1.csv")  
 
-    # for dof in ['thetaA', 'thetaB', 'phiA', 'phiB', 'phiC']:
+run_number = int(sys.argv[1])
+
+for dof in ['thetaA', 'thetaB', 'phiA', 'phiB', 'phiC']:
     if os.path.exists(f'results/run{run_number}/{dof}.pkl'):
         continue
     else:
         print(f"Performing Boresch analysis for {dof} run {run_number}")
 
-        u = mda.Universe('structures/complex.prmtop', f'results/run{run_number}/traj.dcd')
+        u = mda.Universe('structures/complex_DDB1.prmtop', f'results/run{run_number}/traj.dcd')
 
         vals = []
 

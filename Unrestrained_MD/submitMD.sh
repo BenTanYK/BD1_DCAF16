@@ -26,4 +26,4 @@ shift $((OPTIND -1))
 source /home/btan/miniconda3/etc/profile.d/conda.sh
 conda activate openbiosim
 
-python runMD.py $RNUMBER
+python analyse_traj.py $RNUMBER

@@ -5,7 +5,9 @@ loadamberparams frcmod.ions1lm_126_tip3p #Load the Li/Merz 12-6 parameter set fo
 loadamberprep ZAFF.prep #Load ZAFF prep file
 loadamberparams ZAFF.frcmod #Load ZAFF frcmod file
 
-mol = loadpdb complex_noH.pdb 
+mol = loadpdb complex_DDB1_noH.pdb 
+
+savepdb mol debug.pdb
 
 bond mol.173.ZN mol.56.SG #Bond zinc ion with SG atom of residue CYM
 bond mol.173.ZN mol.59.SG #Bond zinc ion with SG atom of residue CYM
@@ -14,8 +16,8 @@ bond mol.173.ZN mol.135.SG #Bond zinc ion with SG atom of residue CYM
 
 solvateOct mol TIP3PBOX 20.0 # Solvate system
 
-addions mol CL 0
+addions mol NA 0
 
-savepdb mol complex_solvated.pdb #Save the pdb file
-saveamberparm mol complex.prmtop complex.inpcrd #Save the topology and coordinate files
+savepdb mol complex_DDB1_solvated.pdb #Save the pdb file
+saveamberparm mol complex_DDB1.prmtop complex_DDB1.inpcrd #Save the topology and coordinate files
 quit #Quit tleap
